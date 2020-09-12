@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import { OK } from 'http-status-codes';
 import routes from './api/v1/domains/user';
 import errorHandler from './middlewares/errorHandler';
+import logger from './common/helper/logger';
 
 class App {
   public app: Express;
@@ -26,7 +27,7 @@ class App {
       });
     });
 
-    this.app.listen(PORT, () => console.log('App running on port', PORT));
+    this.app.listen(PORT, () => logger.log(`App running on port ${PORT}`));
   }
 }
 

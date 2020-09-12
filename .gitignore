@@ -1,3 +1,7 @@
 /node_modules
 coverage
 .env
+
+
+package-lock*
+npm-debug*

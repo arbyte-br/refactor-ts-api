@@ -1,61 +1,69 @@
+import mongoose, { Schema } from 'mongoose';
+
 import errors from '../../../../../common/errors/error-helper';
 
-const mongoose = require('mongoose');
+interface User {
+  _id?: string;
+  name?: string;
+  save?(): User;
+}
 
-let database: any;
-let userSchema: any;
+interface UserModel {
+  new(property: User): User;
+  find(): User[];
+  update(_id: User, name: User): User;
+  deleteOne(_id: User): User;
+}
 
 class UserController {
-  async connectDatabase() {
-    database = database || mongoose.connect('mongodb+srv://usuario:senha@cluster0.go3jm.mongodb.net/development?retryWrites=true&w=majority', {
+  public database;
+
+  public userSchema: Schema;
+
+  constructor() {
+    this.database = this.database || mongoose.connect('mongodb+srv://usuario:senha@cluster0.go3jm.mongodb.net/development?retryWrites=true&w=majority', {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-
-    return database;
   }
 
-  async createUserSchema(database: any) {
-    if (userSchema) {
-      return;
+  async createUserSchema(): Promise<UserModel> {
+    const database = await this.database;
+
+    if (this.userSchema) {
+      const { User } = database.models;
+
+      return User;
     }
 
-    userSchema = new database.Schema({
+    this.userSchema = new database.Schema({
       name: String,
     }, {
       timestamps: true,
     });
 
-    database.model('User', userSchema);
+    database.model('User', this.userSchema);
+
+    const { User } = database.models;
+
+    return User;
   }
 
-  async getUSer() {
+  async getUSer(): Promise<User[]> {
     try {
-      const database = await this.connectDatabase();
-
-      await this.createUserSchema(database);
-
-      const {
-        User,
-      } = database.models;
+      const User = await this.createUserSchema();
 
       const users = User.find();
 
       return users;
-    } catch {
+    } catch (error) {
       throw errors.generic.notFound();
     }
   }
 
-  async createUSer({ name }: { name: string }) {
+  async createUSer({ name }: User): Promise<User> {
     try {
-      const database = await this.connectDatabase();
-
-      await this.createUserSchema(database);
-
-      const {
-        User,
-      } = database.models;
+      const User = await this.createUserSchema();
 
       const user = new User({
         name,
@@ -63,45 +71,33 @@ class UserController {
 
       return user.save();
     } catch {
-      return errors.generic.unprocessableEntity();
+      throw errors.generic.unprocessableEntity();
     }
   }
 
-  async updateUser({ id }: any, { name }: { name: string }) {
+  async updateUser({ _id, name }: User): Promise<User> {
     try {
-      const database = await this.connectDatabase();
-
-      await this.createUserSchema(database);
-
-      const {
-        User,
-      } = database.models;
+      const User = await this.createUserSchema();
 
       return User.update({
-        _id: id,
+        _id,
       }, {
         name,
       });
     } catch {
-      return errors.generic.unprocessableEntity();
+      throw errors.generic.unprocessableEntity();
     }
   }
 
-  async deleteUser({ id }: any) {
+  async deleteUser({ _id }: User): Promise<User> {
     try {
-      const database = await this.connectDatabase();
-
-      await this.createUserSchema(database);
-
-      const {
-        User,
-      } = database.models;
+      const User = await this.createUserSchema();
 
       return User.deleteOne({
-        _id: id,
+        _id,
       });
     } catch {
-      return errors.generic.unprocessableEntity();
+      throw errors.generic.unprocessableEntity();
     }
   }
 }

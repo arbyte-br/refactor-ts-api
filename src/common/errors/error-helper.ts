@@ -11,27 +11,27 @@ import errorCodes from './error-codes';
 
 const errors = {
   generic: {
-    internalServerError: () => new CustomError({
+    internalServerError: (): CustomError => new CustomError({
       message: 'Internal Server Error',
       code: errorCodes.generic.INTERNAL_SERVER_ERROR,
       statusCode: INTERNAL_SERVER_ERROR,
     }),
-    notFound: () => new CustomError({
+    notFound: (): CustomError => new CustomError({
       message: 'Not found',
       code: errorCodes.generic.NOT_FOUND,
       statusCode: NOT_FOUND,
     }),
-    unprocessableEntity: () => new CustomError({
+    unprocessableEntity: (): CustomError => new CustomError({
       message: 'Unprocessable entity',
       statusCode: UNPROCESSABLE_ENTITY,
       code: errorCodes.generic.UNPROCESSABLE_ENTITY,
     }),
-    unauthorized: () => new CustomError({
+    unauthorized: (): CustomError => new CustomError({
       message: 'Unauthorized',
       statusCode: UNAUTHORIZED,
       code: errorCodes.generic.UNAUTHORIZED,
     }),
-    forbidden: () => new CustomError({
+    forbidden: (): CustomError => new CustomError({
       message: 'Forbidden',
       statusCode: FORBIDDEN,
       code: errorCodes.generic.FORBIDDEN,
